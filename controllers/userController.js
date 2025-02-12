@@ -15,6 +15,23 @@ module.exports.addUserEmployer = async (req,res) => {
 
 
 
+module.exports.addUserEmployerWithImg = async (req,res) => {
+    try {
+        const {email,username,password} = req.body;
+        const roleEmployer ='employer'
+        const {filename} = req.file
+
+        const user = await userModel.create({
+            username,email,password,role:roleEmployer , user_imag
+        })
+        res.status(200).json({user});
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+}
+
+
+
 module.exports.addUserAdmin = async (req,res) => {
     try {
         const {email,username,password} = req.body;
