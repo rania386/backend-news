@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["admin", "employer", "stagiaire","visiteur"],
     },
-    user_image: { type: String, require: false, default: "cemployer.png" },
+    user_image: { type: String, require: false, default: "employer.png" },
     age: {type : Number },
     count: {type : Number, default:'0'}
   },
