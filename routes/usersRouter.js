@@ -13,7 +13,8 @@ router.put('/updateuserById/:id',userController.updateuserById);
 router.get('/searchUserByUsername',userController.searchUserByUsername);
 router.get('/getAllUsersAge/:age',userController.getAllUsersAge);
 router.get('/getAllEmployer',userController.getAllEmployer);
-router.get('/getAllAdmin',userController.getAllAdmin); 
+router.get('/getAllAdmin',userController.getAllAdmin);
+
 router.get('/getAllUsersAgeBetMaxAgeMinAge',userController.getAllUsersAgeBetMaxAgeMinAge);  
 router.post('/addUserEmployerWithImg', upload.single("image_user"), userController.addUserEmployerWithImg); 
 

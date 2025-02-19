@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "employer", "stagiaire","visiteur"],
+      enum: ["admin", "employer", "stagiaire"],
     },
     user_image: { type: String, require: false, default: "employer.png" },
     age: {type : Number },
