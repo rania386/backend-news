@@ -1,5 +1,6 @@
-const { model } = require('mongoose');
+
 const userModel = require('../models/userSchema');
+const formationModel = require('../models/formationSchema');
 
 module.exports.addUserEmployer = async (req,res) => {
     try {
@@ -77,8 +78,12 @@ module.exports.deleteUserById= async (req,res) => {
         if (!checkIfUserExists) {
           throw new Error("User not found");
         }
+        await formationModel.updateMany({owner : id},{
+            $pull: { owner: id},// null "" 
+          });
 
         await userModel.findByIdAndDelete(id)
+        
 
         res.status(200).json("deleted");
     } catch (error) {

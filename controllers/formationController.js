@@ -1,3 +1,5 @@
+
+const userModel = require('../models/userSchema');
 const formationModel = require('../models/formationSchema');
 module.exports.getAllFormations = async (req, res) => {
     try {
@@ -38,7 +40,7 @@ module.exports.getAllFormations = async (req, res) => {
   
         
       await formationModel.updateMany({}, {
-          $pull: { cars: id },
+          $pull: { formations: id },
         });
   
       await formationModel.findByIdAndDelete(id);
@@ -90,6 +92,61 @@ module.exports.getAllFormations = async (req, res) => {
       const updated = await formationModel.findById(id);
   
       res.status(200).json({ updated });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  module.exports.affect = async (req, res) => {
+    try {
+      const { userId, formationId } = req.body;
+  
+      const formationById = await formationModel.findById(formationId);
+  
+      if (!formationById) {
+        throw new Error("formation introuvable");
+      }
+      const checkIfUserExists = await userModel.findById(userId);
+      if (!checkIfUserExists) {
+        throw new Error("User not found");
+      }
+  
+      await formationModel.findByIdAndUpdate(formationId, {
+        $set: { owner: userId },
+      });
+  
+      await userModel.findByIdAndUpdate(userId, {
+        $push: { formations: formationId },
+      });
+  
+      res.status(200).json('affected');
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+
+  module.exports.desaffect = async (req, res) => {
+    try {
+      const { userId, formationId } = req.body;
+  
+      const formationById = await formationModel.findById(formationId);
+  
+      if (!formationById) {
+        throw new Error("formation introuvable");
+      }
+      const checkIfUserExists = await userModel.findById(userId);
+      if (!checkIfUserExists) {
+        throw new Error("User not found");
+      }
+  
+      await formationModel.findByIdAndUpdate(formationId, {
+        $unset: { owners: 1 },// null "" 
+      });
+  
+      await userModel.findByIdAndUpdate(userId, {
+        $pull: { formation: formationId },
+      });
+  
+      res.status(200).json('desaffected');
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

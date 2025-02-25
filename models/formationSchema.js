@@ -6,10 +6,15 @@ const formationSchema = new mongoose.Schema(
     titre:String,
     contenu:String,
     departement:String,
+
+    
+    //owner : {type : mongoose.Schema.Types.ObjectId,ref: 'User'} // many 
+    owners : [{type : mongoose.Schema.Types.ObjectId,ref: 'User'}] // many 
+
   },
   { timestamps: true }
 );
 
 
-const formation= mongoose.model("formation", formationSchema);
-module.exports = formation;
+const Formation= mongoose.model("formation", formationSchema);
+module.exports = Formation;

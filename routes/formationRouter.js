@@ -5,10 +5,9 @@ const formationController = require('../controllers/formationController');
 router.get('/getAllFormations', formationController.getAllFormations );
 router.get('/getAllFormationsById/:id', formationController.getAllFormationsById );
 router.post('/addFormations', formationController.addFormations );
-
+router.put('/affect', formationController.affect );
+router.put('/desaffect', formationController.desaffect );
 router.put('/updateFormations/:id', formationController.updateFormations );
-
-
 router.delete('/deletFormationsById/:id', formationController.deleteFormationsById );
 
 module.exports = router;
