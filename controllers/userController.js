@@ -50,7 +50,7 @@ module.exports.addUserAdmin = async (req,res) => {
 
 module.exports.getAllUsers = async (req,res) => {
     try {
-        const userList = await userModel.find()
+        const userList = await userModel.find().
         res.status(200).json({userList});
     } catch (error) {
         res.status(500).json({message: error.message});
@@ -78,18 +78,23 @@ module.exports.deleteUserById= async (req,res) => {
         if (!checkIfUserExists) {
           throw new Error("User not found");
         }
+
         await formationModel.updateMany({owner : id},{
-            $pull: { owner: id},// null "" 
+            $pull: { owner: 1 },// null "" 
           });
 
         await userModel.findByIdAndDelete(id)
-        
 
         res.status(200).json("deleted");
     } catch (error) {
         res.status(500).json({message: error.message});
     }
 }
+
+
+
+
+
 
 module.exports.updateuserById = async (req, res) => {
     try {

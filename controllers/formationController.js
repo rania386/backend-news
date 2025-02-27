@@ -14,20 +14,28 @@ module.exports.getAllFormations = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
+  
   module.exports.getAllFormationsById = async (req, res) => {
     try {
-        const id = req.params.id;
-      const formation = await formationModel.findById(id).populate("owner");;
-  
-      if (!formation || formation.length === 0) {
-        throw new Error(" formation introuvable");
-      }
-      res.status(200).json(formationList);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  };
+        const { id } = req.params;
+        const formation = await formationModel.findById(id).populate("owners"); 
 
+        if (!formation) {
+            return res.status(404).json({ message: "Formation not found" });
+        }
+
+        res.status(200).json(formation);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+  
+
+
+
+ 
   module.exports.deleteFormationsById = async (req, res) => {
     try {
       const id = req.params.id;
@@ -35,12 +43,12 @@ module.exports.getAllFormations = async (req, res) => {
       const formationById = await formationModel.findById(id);
   
       if (!formationById || formationById.length === 0) {
-        throw new Error("formationintrouvable");
+        throw new Error("formation introuvable");
       }
   
         
-      await formationModel.updateMany({}, {
-          $pull: { formations: id },
+      await userModel.updateMany({}, {
+          $pull: {formations: id },
         });
   
       await formationModel.findByIdAndDelete(id);
@@ -50,6 +58,14 @@ module.exports.getAllFormations = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
+
+
+
+
+
+
+
+
   module.exports.addFormations = async (req, res) => {
     try {
       const { id_f, titre, contenu, departement } = req.body;
@@ -98,56 +114,61 @@ module.exports.getAllFormations = async (req, res) => {
   };
   module.exports.affect = async (req, res) => {
     try {
-      const { userId, formationId } = req.body;
-  
-      const formationById = await formationModel.findById(formationId);
-  
-      if (!formationById) {
-        throw new Error("formation introuvable");
-      }
-      const checkIfUserExists = await userModel.findById(userId);
-      if (!checkIfUserExists) {
-        throw new Error("User not found");
-      }
-  
-      await formationModel.findByIdAndUpdate(formationId, {
-        $set: { owner: userId },
-      });
-  
-      await userModel.findByIdAndUpdate(userId, {
-        $push: { formations: formationId },
-      });
-  
-      res.status(200).json('affected');
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  };
+        const { userId, formationId } = req.body;
 
-  module.exports.desaffect = async (req, res) => {
-    try {
-      const { userId, formationId } = req.body;
-  
-      const formationById = await formationModel.findById(formationId);
-  
-      if (!formationById) {
-        throw new Error("formation introuvable");
-      }
-      const checkIfUserExists = await userModel.findById(userId);
-      if (!checkIfUserExists) {
-        throw new Error("User not found");
-      }
-  
-      await formationModel.findByIdAndUpdate(formationId, {
-        $unset: { owners: 1 },// null "" 
-      });
-  
-      await userModel.findByIdAndUpdate(userId, {
-        $pull: { formation: formationId },
-      });
-  
-      res.status(200).json('desaffected');
+        const formationById = await formationModel.findById(formationId);
+        if (!formationById) {
+            throw new Error("formation introuvable");
+        }
+
+        const checkIfUserExists = await userModel.findById(userId);
+        if (!checkIfUserExists) {
+            throw new Error("User not found");
+        }
+
+        // Ajouter userId dans owners[] dans formation
+        await formationModel.findByIdAndUpdate(formationId, {
+            $push: { owners: userId },
+        });
+
+        // Ajouter formationId dans formations[] dans user
+        await userModel.findByIdAndUpdate(userId, {
+            $push: { formations: formationId },
+        });
+
+        res.status(200).json("affected");
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
-  };
+};
+
+module.exports.desaffect = async (req, res) => {
+    try {
+        const { userId, formationId } = req.body;
+
+        const formationById = await formationModel.findById(formationId);
+        if (!formationById) {
+            throw new Error("formation introuvable");
+        }
+
+        const checkIfUserExists = await userModel.findById(userId);
+        if (!checkIfUserExists) {
+            throw new Error("User not found");
+        }
+
+        // Supprimer userId de owners[] dans formation
+        await formationModel.findByIdAndUpdate(formationId, {
+            $pull: { owners: userId },
+        });
+
+        // Supprimer formationId de formations[] dans user
+        await userModel.findByIdAndUpdate(userId, {
+            $pull: { formations: formationId },
+        });
+
+        res.status(200).json("desaffected");
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
