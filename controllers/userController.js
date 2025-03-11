@@ -1,6 +1,13 @@
 
 const userModel = require('../models/userSchema');
 const formationModel = require('../models/formationSchema');
+const jwt = require('jsonwebtoken');
+
+const maxTime = 24 *60 * 60 //24H
+//const maxTime = 1 * 60 //1min
+const createToken = (id) => {
+    return jwt.sign({id},'net secret pfe', {expiresIn: maxTime })
+}
 
 module.exports.addUserEmployer = async (req,res) => {
     try {
@@ -50,13 +57,12 @@ module.exports.addUserAdmin = async (req,res) => {
 
 module.exports.getAllUsers = async (req,res) => {
     try {
-        const userList = await userModel.find().
+        const userList = await userModel.find()
         res.status(200).json({userList});
     } catch (error) {
         res.status(500).json({message: error.message});
     }
 }
-
 module.exports.getUsersById = async (req,res) => {
     try {
         const {id} = req.params
@@ -78,10 +84,13 @@ module.exports.deleteUserById= async (req,res) => {
         if (!checkIfUserExists) {
           throw new Error("User not found");
         }
-
+        await articleModel.updateMany({owners : id},{
+            $unset: { owners: 1 },// null "" 
+          });
         await formationModel.updateMany({owner : id},{
             $pull: { owner: 1 },// null "" 
           });
+        
 
         await userModel.findByIdAndDelete(id)
 
@@ -180,6 +189,26 @@ module.exports.updateuserById = async (req, res) => {
                 const userListe = await userModel.find({role : "admin"})
         
                 res.status(200).json({userListe});
+            } catch (error) {
+                res.status(500).json({message: error.message});
+            }
+        }
+        module.exports.login= async (req,res) => {
+            try {
+                const { email , password } = req.body;
+                const user = await userModel.login(email, password)
+                const token = createToken(user._id)
+                res.cookie("jwt_token_9antra", token, {httpOnly:false,maxAge:maxTime * 1000})
+                res.status(200).json({user})
+            } catch (error) {
+                res.status(500).json({message: error.message});
+            }
+        }
+        module.exports.logout= async (req,res) => {
+            try {
+          
+                res.cookie("jwt_token_9antra", "", {httpOnly:false,maxAge:1})
+                res.status(200).json("logged")
             } catch (error) {
                 res.status(500).json({message: error.message});
             }

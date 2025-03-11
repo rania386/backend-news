@@ -16,5 +16,5 @@ const formationSchema = new mongoose.Schema(
 );
 
 
-const Formation= mongoose.model("formation", formationSchema);
+const Formation = mongoose.model("formation", formationSchema);
 module.exports = Formation;

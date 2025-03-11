@@ -3,10 +3,13 @@ var router = express.Router();
 
 const userController = require('../controllers/userController');
 const upload = require('../middlewares/uploadFile'); 
+const {requireAuthUser} = require('../middlewares/authMiddleware');
 /* GET users listing. */
 router.post('/addUserEmployer', userController.addUserEmployer);
 router.post('/addUserAdmin', userController.addUserAdmin);
-router.get('/getAllUsers', userController.getAllUsers);
+router.post('/login', userController.login);
+router.post('/logout',userController.logout); 
+router.get('/getAllUsers',requireAuthUser,userController.getAllUsers); 
 router.get('/getUsersById/:id', userController.getUsersById);
 router.get('/getAllUsersSortByAge',userController.getAllUsersSortByAge); 
 router.put('/updateuserById/:id',userController.updateuserById);
