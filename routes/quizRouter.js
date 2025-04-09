@@ -10,3 +10,4 @@ router.delete("/deleteQuizById/:id", quizController.deleteQuizById);
 router.post("/submitQuiz", quizController.submitQuiz);
 
 module.exports = router;
+

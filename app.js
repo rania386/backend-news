@@ -27,7 +27,8 @@ var quizRouter = require("./routes/quizRouter");
 var alerteRouter = require ("./routes/alerteRouter");
 var chapitreRouter = require ("./routes/chapitreRouter");
 const pdfRouter = require("./routes/pdfRouter");
-
+const inscritRouter = require("./routes/inscritRouter");
+const certificatRouter = require("./routes/certificatRouter");
 
 var app = express();
 
@@ -67,6 +68,9 @@ app.use("/quizzes", quizRouter);
 app.use("/alerte", alerteRouter);
 app.use("/chapitre", chapitreRouter);
 app.use("/pdfs", pdfRouter);
+app.use("/inscrit", inscritRouter);
+app.use("/certificat", certificatRouter);
+
 
 
 // catch 404 and forward to error handler
